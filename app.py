@@ -42,7 +42,7 @@ if option_lang=="English" :
     lg='en'
 if option_lang=="Deutsch":
     lg="de"
-if option_lang="Français":
+if option_lang=="Français":
     lg="fr"
 
 def text_to_speech(text, tld,lg):
