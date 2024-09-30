@@ -11,7 +11,7 @@ st.title("Conversión de Texto a Audio")
 image = Image.open('gato_raton.png')
 st.image(image, width=350)
 with st.sidebar:
-    st.subheader("Escribe y/o selecciona texto para ser escuchado.")
+    st.subheader("Escribe y/o selecciona texto para ser traducido en otro idioma y generar a su vez un audio.")
 
 try:
     os.mkdir("temp")
@@ -28,7 +28,7 @@ st.write('¡Ay! -dijo el ratón-. El mundo se hace cada día más pequeño. Al p
         )
            
 st.markdown(f"¿Quieres escucharlo?, copia el texto")
-text = st.text_area("Ingrese el texto a escuchar.")
+text = st.text_area("Ingrese el texto a traducir y a escuchar.")
 
 # Selección de idioma y bandera
 option_lang = st.selectbox(
