@@ -18,14 +18,7 @@ except:
     pass
 
 st.subheader("Una pequeña Fábula.")
-st.write('¡Ay! -dijo el ratón-. El mundo se hace cada día más pequeño. Al principio era tan grande que le tenía miedo. '  
-         ' Corría y corría y por cierto que me alegraba ver esos muros, a diestra y siniestra, en la distancia. ' 
-         ' Pero esas paredes se estrechan tan rápido que me encuentro en el último cuarto y ahí en el rincón está '  
-         ' la trampa sobre la cual debo pasar. Todo lo que debes hacer es cambiar de rumbo dijo el gato...y se lo comió. ' 
-         '  '
-         ' Franz Kafka.'
-        
-        )
+st.write('¡Ay! -dijo el ratón-. El mundo se hace cada día más pequeño... Franz Kafka.')
 
 # Mostrar área de texto para ingresar contenido
 text = st.text_area("Ingrese el texto a escuchar.")
@@ -69,24 +62,33 @@ def text_to_speech(text, lg):
     tts.save(f"temp/{my_file_name}.mp3")
     return my_file_name, text
 
+# Mostrar GIF de carga mientras se procesa el audio
+loading_gif = 'assets/loading.gif'  # Ruta del GIF de carga
+
 # Botón para convertir texto a audio
 if st.button("Convertir a Audio"):
-    result, output_text = text_to_speech(text, lg)
-    audio_file = open(f"temp/{result}.mp3", "rb")
-    audio_bytes = audio_file.read()
-    st.markdown("## Tu audio:")
-    st.audio(audio_bytes, format="audio/mp3", start_time=0)
+    with st.spinner("Procesando el audio..."):  # Texto de carga
+        st.markdown(
+            f'<img src="data:image/gif;base64,{base64.b64encode(open(loading_gif, "rb").read()).decode()}" width="100" alt="Loading...">',
+            unsafe_allow_html=True
+        )
+        time.sleep(2)  # Simula un tiempo de procesamiento
+        result, output_text = text_to_speech(text, lg)
+        audio_file = open(f"temp/{result}.mp3", "rb")
+        audio_bytes = audio_file.read()
+        st.markdown("## Tu audio:")
+        st.audio(audio_bytes, format="audio/mp3", start_time=0)
 
-    # Descargar archivo de audio
-    with open(f"temp/{result}.mp3", "rb") as f:
-        data = f.read()
+        # Descargar archivo de audio
+        with open(f"temp/{result}.mp3", "rb") as f:
+            data = f.read()
 
-    def get_binary_file_downloader_html(bin_file, file_label='File'):
-        bin_str = base64.b64encode(data).decode()
-        href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download {file_label}</a>'
-        return href
+        def get_binary_file_downloader_html(bin_file, file_label='File'):
+            bin_str = base64.b64encode(data).decode()
+            href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download {file_label}</a>'
+            return href
 
-    st.markdown(get_binary_file_downloader_html(f"temp/{result}.mp3", "Audio File"), unsafe_allow_html=True)
+        st.markdown(get_binary_file_downloader_html(f"temp/{result}.mp3", "Audio File"), unsafe_allow_html=True)
 
 # Eliminar archivos antiguos
 def remove_files(n):
@@ -99,3 +101,4 @@ def remove_files(n):
                 os.remove(f)
 
 remove_files(7)
+
