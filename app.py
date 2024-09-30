@@ -5,6 +5,7 @@ import glob
 from gtts import gTTS
 from PIL import Image
 import base64
+from googletrans import Translator  # Para traducir el texto
 
 st.title("Conversión de Texto a Audio")
 image = Image.open('gato_raton.png')
@@ -37,6 +38,7 @@ option_lang = st.selectbox(
 
 # Mapeo de idioma a código de lenguaje y archivo de bandera
 flag_image = None
+lg = 'es'  # Idioma por defecto
 if option_lang == "Español":
     lg = 'es'
     flag_image = 'flags/es.png'  # Ruta de la bandera española
@@ -68,46 +70,62 @@ def text_to_speech(text, lg):
     tts.save(f"temp/{my_file_name}.mp3")
     return my_file_name, text
 
+# Inicializa el traductor de googletrans
+translator = Translator()
+
 # Mostrar GIF de carga mientras se procesa el audio
 loading_gif = 'assets/loading.gif'  # Ruta del GIF de carga
 
 # Botón para convertir texto a audio
 if st.button("Convertir a Audio"):
-    # Crea un contenedor vacío para el GIF
-    gif_placeholder = st.empty()
+    # Traduce el texto al idioma seleccionado
+    if text.strip() != "":
+        translated = translator.translate(text, dest=lg)
+        translated_text = translated.text
 
-    # Inserta el GIF de carga en el contenedor vacío
-    with gif_placeholder:
-        st.markdown(
-            f'<img src="data:image/gif;base64,{base64.b64encode(open(loading_gif, "rb").read()).decode()}" width="100" alt="Loading...">',
-            unsafe_allow_html=True
-        )
-    
-    # Simula el tiempo de procesamiento (ajustable si es necesario)
-    time.sleep(2)  
-    
-    # Conversión del texto a audio
-    result, output_text = text_to_speech(text, lg)
-    
-    # Una vez que termina el procesamiento, vacía el contenedor del GIF
-    gif_placeholder.empty()
-    
-    # Cargar y reproducir el archivo de audio generado
-    audio_file = open(f"temp/{result}.mp3", "rb")
-    audio_bytes = audio_file.read()
-    st.markdown("## Tu audio:")
-    st.audio(audio_bytes, format="audio/mp3", start_time=0)
+        # Muestra el texto traducido
+        st.subheader("Texto traducido:")
+        st.write(translated_text)
 
-    # Descargar archivo de audio
-    with open(f"temp/{result}.mp3", "rb") as f:
-        data = f.read()
+        # Crea un contenedor vacío para el GIF
+        gif_placeholder = st.empty()
 
-    def get_binary_file_downloader_html(bin_file, file_label='File'):
-        bin_str = base64.b64encode(data).decode()
-        href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download {file_label}</a>'
-        return href
+        # Inserta el GIF de carga en el contenedor vacío
+        with gif_placeholder:
+            st.markdown(
+                f'<img src="data:image/gif;base64,{base64.b64encode(open(loading_gif, "rb").read()).decode()}" width="100" alt="Loading...">',
+                unsafe_allow_html=True
+            )
+        
+        # Simula el tiempo de procesamiento (ajustable si es necesario)
+        time.sleep(2)  
+        
+        # Conversión del texto traducido a audio
+        result, output_text = text_to_speech(translated_text, lg)
+        
+        # Una vez que termina el procesamiento, vacía el contenedor del GIF
+        gif_placeholder.empty()
+        
+        # Cargar y reproducir el archivo de audio generado
+        audio_file = open(f"temp/{result}.mp3", "rb")
+        audio_bytes = audio_file.read()
+        st.markdown("## Tu audio:")
+        st.audio(audio_bytes, format="audio/mp3", start_time=0)
 
-    st.markdown(get_binary_file_downloader_html(f"temp/{result}.mp3", "Audio File"), unsafe_allow_html=True)
+        # Mostrar el texto traducido nuevamente debajo del audio generado
+        st.subheader("Texto en el idioma seleccionado:")
+        st.write(translated_text)
+
+        # Descargar archivo de audio
+        with open(f"temp/{result}.mp3", "rb") as f:
+            data = f.read()
+
+        def get_binary_file_downloader_html(bin_file, file_label='File'):
+            bin_str = base64.b64encode(data).decode()
+            href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download {file_label}</a>'
+            return href
+
+        st.markdown(get_binary_file_downloader_html(f"temp/{result}.mp3", "Audio File"), unsafe_allow_html=True)
 
 # Eliminar archivos antiguos
 def remove_files(n):
