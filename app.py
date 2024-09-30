@@ -18,9 +18,16 @@ except:
     pass
 
 st.subheader("Una pequeña Fábula.")
-st.write('¡Ay! -dijo el ratón-. El mundo se hace cada día más pequeño... Franz Kafka.')
-
-# Mostrar área de texto para ingresar contenido
+st.write('¡Ay! -dijo el ratón-. El mundo se hace cada día más pequeño. Al principio era tan grande que le tenía miedo. '  
+         ' Corría y corría y por cierto que me alegraba ver esos muros, a diestra y siniestra, en la distancia. ' 
+         ' Pero esas paredes se estrechan tan rápido que me encuentro en el último cuarto y ahí en el rincón está '  
+         ' la trampa sobre la cual debo pasar. Todo lo que debes hacer es cambiar de rumbo dijo el gato...y se lo comió. ' 
+         '  '
+         ' Franz Kafka.'
+        
+        )
+           
+st.markdown(f"¿Quieres escucharlo?, copia el texto")
 text = st.text_area("Ingrese el texto a escuchar.")
 
 # Selección de idioma y bandera
@@ -67,13 +74,18 @@ loading_gif = 'assets/loading.gif'  # Ruta del GIF de carga
 
 # Botón para convertir texto a audio
 if st.button("Convertir a Audio"):
-    with st.spinner("Procesando el audio..."):  # Texto de carga
+    with st.spinner("Procesando el audio..."):
         st.markdown(
             f'<img src="data:image/gif;base64,{base64.b64encode(open(loading_gif, "rb").read()).decode()}" width="100" alt="Loading...">',
             unsafe_allow_html=True
         )
-        time.sleep(2)  # Simula un tiempo de procesamiento
+        # Simula el tiempo de procesamiento con una pausa (puedes ajustar el tiempo si es necesario)
+        time.sleep(2)  
+        
+        # Conversión del texto a audio
         result, output_text = text_to_speech(text, lg)
+        
+        # Cargar y reproducir el archivo de audio generado
         audio_file = open(f"temp/{result}.mp3", "rb")
         audio_bytes = audio_file.read()
         st.markdown("## Tu audio:")
