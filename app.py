@@ -112,10 +112,6 @@ if st.button("Convertir a Audio"):
         st.markdown("## Tu audio:")
         st.audio(audio_bytes, format="audio/mp3", start_time=0)
 
-        # Mostrar el texto traducido nuevamente debajo del audio generado
-        st.subheader("Texto en el idioma seleccionado:")
-        st.write(translated_text)
-
         # Descargar archivo de audio
         with open(f"temp/{result}.mp3", "rb") as f:
             data = f.read()
