@@ -24,7 +24,6 @@ st.write('¡Ay! -dijo el ratón-. El mundo se hace cada día más pequeño. Al p
          ' la trampa sobre la cual debo pasar. Todo lo que debes hacer es cambiar de rumbo dijo el gato...y se lo comió. ' 
          '  '
          ' Franz Kafka.'
-        
         )
            
 st.markdown(f"¿Quieres escucharlo?, copia el texto")
@@ -74,33 +73,41 @@ loading_gif = 'assets/loading.gif'  # Ruta del GIF de carga
 
 # Botón para convertir texto a audio
 if st.button("Convertir a Audio"):
-    with st.spinner("Procesando el audio..."):
+    # Crea un contenedor vacío para el GIF
+    gif_placeholder = st.empty()
+
+    # Inserta el GIF de carga en el contenedor vacío
+    with gif_placeholder:
         st.markdown(
             f'<img src="data:image/gif;base64,{base64.b64encode(open(loading_gif, "rb").read()).decode()}" width="100" alt="Loading...">',
             unsafe_allow_html=True
         )
-        # Simula el tiempo de procesamiento con una pausa (puedes ajustar el tiempo si es necesario)
-        time.sleep(2)  
-        
-        # Conversión del texto a audio
-        result, output_text = text_to_speech(text, lg)
-        
-        # Cargar y reproducir el archivo de audio generado
-        audio_file = open(f"temp/{result}.mp3", "rb")
-        audio_bytes = audio_file.read()
-        st.markdown("## Tu audio:")
-        st.audio(audio_bytes, format="audio/mp3", start_time=0)
+    
+    # Simula el tiempo de procesamiento (ajustable si es necesario)
+    time.sleep(2)  
+    
+    # Conversión del texto a audio
+    result, output_text = text_to_speech(text, lg)
+    
+    # Una vez que termina el procesamiento, vacía el contenedor del GIF
+    gif_placeholder.empty()
+    
+    # Cargar y reproducir el archivo de audio generado
+    audio_file = open(f"temp/{result}.mp3", "rb")
+    audio_bytes = audio_file.read()
+    st.markdown("## Tu audio:")
+    st.audio(audio_bytes, format="audio/mp3", start_time=0)
 
-        # Descargar archivo de audio
-        with open(f"temp/{result}.mp3", "rb") as f:
-            data = f.read()
+    # Descargar archivo de audio
+    with open(f"temp/{result}.mp3", "rb") as f:
+        data = f.read()
 
-        def get_binary_file_downloader_html(bin_file, file_label='File'):
-            bin_str = base64.b64encode(data).decode()
-            href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download {file_label}</a>'
-            return href
+    def get_binary_file_downloader_html(bin_file, file_label='File'):
+        bin_str = base64.b64encode(data).decode()
+        href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download {file_label}</a>'
+        return href
 
-        st.markdown(get_binary_file_downloader_html(f"temp/{result}.mp3", "Audio File"), unsafe_allow_html=True)
+    st.markdown(get_binary_file_downloader_html(f"temp/{result}.mp3", "Audio File"), unsafe_allow_html=True)
 
 # Eliminar archivos antiguos
 def remove_files(n):
@@ -113,4 +120,3 @@ def remove_files(n):
                 os.remove(f)
 
 remove_files(7)
-
