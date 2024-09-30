@@ -52,7 +52,7 @@ elif option_lang == "Français":
     lg = 'fr'
     flag_image = 'flags/fr.png'  # Ruta de la bandera francesa
 elif option_lang == "Português":
-    lg = 'pt-BR'
+    lg = 'pt'
     flag_image = 'flags/pt-BR.png'  # Ruta de la bandera de Brasil
 
 # Mostrar la bandera seleccionada
